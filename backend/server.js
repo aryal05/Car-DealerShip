@@ -39,6 +39,64 @@ app.get('/health', (req, res) => {
   res.json({ status: 'OK', message: 'Aryals Dealer API is running' });
 });
 
+// Database health check endpoint
+app.get('/api/db-health', async (req, res) => {
+  try {
+    // Test database connection
+    const [rows] = await pool.query('SELECT 1 as test');
+    
+    // Get table information
+    const [tables] = await pool.query(`
+      SELECT TABLE_NAME 
+      FROM information_schema.TABLES 
+      WHERE TABLE_SCHEMA = DATABASE()
+    `);
+    
+    const tableNames = tables.map(t => t.TABLE_NAME);
+    
+    // Get counts from each table if they exist
+    const counts = {};
+    
+    if (tableNames.includes('vehicles')) {
+      const [vehicleCount] = await pool.query('SELECT COUNT(*) as count FROM vehicles');
+      counts.vehicles = vehicleCount[0].count;
+    }
+    
+    if (tableNames.includes('admin_users')) {
+      const [adminCount] = await pool.query('SELECT COUNT(*) as count FROM admin_users');
+      counts.admin_users = adminCount[0].count;
+    }
+    
+    if (tableNames.includes('vehicle_images')) {
+      const [imageCount] = await pool.query('SELECT COUNT(*) as count FROM vehicle_images');
+      counts.vehicle_images = imageCount[0].count;
+    }
+    
+    if (tableNames.includes('banner_images')) {
+      const [bannerCount] = await pool.query('SELECT COUNT(*) as count FROM banner_images');
+      counts.banner_images = bannerCount[0].count;
+    }
+    
+    res.json({
+      success: true,
+      database: 'Connected',
+      tables: tableNames,
+      record_counts: counts,
+      database_name: process.env.DB_NAME || 'railway',
+      message: tableNames.length === 0 
+        ? '⚠️ No tables found. Please import railway_setup.sql' 
+        : '✅ Database is configured correctly'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      database: 'Error',
+      error: error.message,
+      message: '❌ Database connection failed or tables missing'
+    });
+  }
+});
+
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({ success: false, message: 'Route not found' });
