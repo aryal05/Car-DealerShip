@@ -1,0 +1,28 @@
+# Railway Backend Environment Variables
+# Copy these values to Railway dashboard under Variables tab
+# DO NOT commit the actual .env file to git!
+
+# Database Configuration (from Railway MySQL service)
+DB_HOST=mysql.railway.internal
+DB_USER=root
+DB_PASSWORD=ghmgYFiQvmcOympsDKznqEpMgMRoohQu
+DB_NAME=railway
+DB_PORT=3306
+
+# Server Configuration
+PORT=5000
+NODE_ENV=production
+
+# Frontend URL (Update this with your actual Vercel URL)
+FRONTEND_URL=https://car-dealer-ship-teal.vercel.app
+
+# Security
+JWT_SECRET=car-dealer-secret-2026-random-key
+
+# MySQL Connection Details for Reference
+# MYSQLHOST=mysql.railway.internal
+# MYSQLPASSWORD=ghmgYFiQvmcOympsDKznqEpMgMRoohQu
+# MYSQLDATABASE=railway
+# MYSQLPORT=3306
+# MYSQLUSER=root
+# MYSQL_PUBLIC_URL=mysql://root:ghmgYFiQvmcOympsDKznqEpMgMRoohQu@metro.proxy.rlwy.net:41012/railway
