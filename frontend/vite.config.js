@@ -21,7 +21,7 @@ export default defineConfig({
     port: 3000,
     proxy: {
       '/api': {
-        target: 'http://localhost:5000',
+        target: 'https://car-dealership-production-3c2c.up.railway.app',
         changeOrigin: true
       }
     }

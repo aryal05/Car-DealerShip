@@ -6,7 +6,7 @@
  */
 
 // Base URL for API requests
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://car-dealership-production-3c2c.up.railway.app/api';
 
 // Base URL for uploaded images
-export const UPLOAD_URL = import.meta.env.VITE_UPLOAD_URL || 'http://localhost:5000/uploads';
+export const UPLOAD_URL = import.meta.env.VITE_UPLOAD_URL || 'https://car-dealership-production-3c2c.up.railway.app/uploads';

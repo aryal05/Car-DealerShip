@@ -42,7 +42,9 @@ const EditVehicle = () => {
       setVehicle(data);
       
       // Fetch images
-      const imagesResponse = await axios.get(`http://localhost:5000/api/admin/vehicles/${id}/images`);
+      const imagesResponse = await axios.get(
+        `https://car-dealership-production-3c2c.up.railway.app/api/admin/vehicles/${id}/images`,
+      );
       if (imagesResponse.data.data.length > 0) {
         setImages(imagesResponse.data.data.map(img => ({
           id: img.id,

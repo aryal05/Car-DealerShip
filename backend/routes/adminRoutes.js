@@ -37,7 +37,7 @@ router.post('/admin/upload', upload.single('image'), (req, res) => {
       return res.status(400).json({ success: false, message: 'No file uploaded' });
     }
     
-    const imageUrl = `http://localhost:5000/uploads/${req.file.filename}`;
+    const imageUrl = `https://car-dealership-production-3c2c.up.railway.app/uploads/${req.file.filename}`;
     res.json({ 
       success: true, 
       imageUrl: imageUrl,
