@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 import vehicleRoutes from './routes/vehicleRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import setupRoutes from './routes/setupRoutes.js';
+import testDriveRoutes from './routes/testDriveRoutes.js';
 import pool from './config/database.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -51,6 +52,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 app.use('/api', vehicleRoutes);
 app.use('/api', adminRoutes);
 app.use('/api', setupRoutes);
+app.use('/api', testDriveRoutes);
 
 // Health check
 app.get('/health', (req, res) => {
