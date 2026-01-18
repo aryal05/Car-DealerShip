@@ -15,26 +15,53 @@ import { API_BASE_URL } from "../config/api";
 const Home = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [brands, setBrands] = useState([]);
-
-  const heroImages = [
-    "https://images.unsplash.com/photo-1619767886558-efdc259cde1a?w=1920&q=80",
-    "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1920&q=80",
-    "https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=1920&q=80",
-    "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?w=1920&q=80",
-    "https://images.unsplash.com/photo-1614200187524-dc4b892acf16?w=1920&q=80",
-    "https://images.unsplash.com/photo-1502877338535-766e1452684a?w=1920&q=80",
-  ];
+  const [heroImages, setHeroImages] = useState([]);
 
   useEffect(() => {
+    fetchBanners();
+    fetchBrands();
+  }, []);
+
+  useEffect(() => {
+    if (heroImages.length === 0) return;
+
     const interval = setInterval(() => {
       setCurrentImageIndex((prev) => (prev + 1) % heroImages.length);
     }, 4000);
     return () => clearInterval(interval);
-  }, []);
+  }, [heroImages]);
 
-  useEffect(() => {
-    fetchBrands();
-  }, []);
+  const fetchBanners = async () => {
+    try {
+      const response = await axios.get(
+        `${API_BASE_URL}/admin/banners?route=home`,
+      );
+      const banners = response.data.data || [];
+      if (banners.length > 0) {
+        const imageUrls = banners.map((banner) =>
+          banner.image_url.startsWith("http")
+            ? banner.image_url
+            : `${API_BASE_URL.replace("/api", "")}${banner.image_url}`,
+        );
+        setHeroImages(imageUrls);
+      } else {
+        // Fallback to default images if no banners found
+        setHeroImages([
+          "https://images.unsplash.com/photo-1619767886558-efdc259cde1a?w=1920&q=80",
+          "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1920&q=80",
+          "https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=1920&q=80",
+        ]);
+      }
+    } catch (error) {
+      console.error("Error fetching banners:", error);
+      // Fallback to default images on error
+      setHeroImages([
+        "https://images.unsplash.com/photo-1619767886558-efdc259cde1a?w=1920&q=80",
+        "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1920&q=80",
+        "https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=1920&q=80",
+      ]);
+    }
+  };
 
   const fetchBrands = async () => {
     try {
@@ -173,20 +200,22 @@ const Home = () => {
         </div>
 
         {/* Image Navigation Dots */}
-        <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 z-20 flex space-x-3">
-          {heroImages.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentImageIndex(index)}
-              className={`transition-all duration-300 rounded-full ${
-                index === currentImageIndex
-                  ? "bg-white w-10 h-2"
-                  : "bg-white/40 hover:bg-white/60 w-2 h-2"
-              }`}
-              aria-label={`Go to slide ${index + 1}`}
-            />
-          ))}
-        </div>
+        {heroImages.length > 1 && (
+          <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 z-20 flex space-x-3">
+            {heroImages.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentImageIndex(index)}
+                className={`transition-all duration-300 rounded-full ${
+                  index === currentImageIndex
+                    ? "bg-white w-10 h-2"
+                    : "bg-white/40 hover:bg-white/60 w-2 h-2"
+                }`}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
+          </div>
+        )}
 
         {/* Scroll Indicator */}
         <motion.div
