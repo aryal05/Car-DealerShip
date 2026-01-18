@@ -8,7 +8,8 @@ export const getVehicles = async (req, res) => {
       status, 
       minPrice, 
       maxPrice, 
-      color, 
+      color,
+      year, 
       autopilot,
       wheels,
       search,
@@ -27,6 +28,11 @@ export const getVehicles = async (req, res) => {
     if (status) {
       query += ' AND status = ?';
       params.push(status);
+    }
+
+    if (year) {
+      query += ' AND year = ?';
+      params.push(parseInt(year));
     }
 
     if (minPrice) {
@@ -105,19 +111,19 @@ export const getVehicle = async (req, res) => {
 export const createVehicle = async (req, res) => {
   try {
     const {
-      model, variant, price, original_price, after_tax_credit, mileage,
+      model, year, variant, price, original_price, after_tax_credit, mileage,
       range_epa, top_speed, acceleration, exterior_color, interior_color,
       wheels, autopilot, seat_layout, additional_features, image_url,
       status, inventory_type, location
     } = req.body;
 
     const [result] = await pool.query(
-      `INSERT INTO vehicles (model, variant, price, original_price, after_tax_credit, 
+      `INSERT INTO vehicles (model, year, variant, price, original_price, after_tax_credit, 
        mileage, range_epa, top_speed, acceleration, exterior_color, interior_color, 
        wheels, autopilot, seat_layout, additional_features, image_url, status, 
        inventory_type, location) 
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [model, variant, price, original_price, after_tax_credit, mileage,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [model, year, variant, price, original_price, after_tax_credit, mileage,
        range_epa, top_speed, acceleration, exterior_color, interior_color,
        wheels, autopilot, seat_layout, additional_features, image_url,
        status, inventory_type, location]
@@ -138,7 +144,7 @@ export const updateVehicle = async (req, res) => {
   try {
     const { id } = req.params;
     const {
-      model, variant, price, original_price, after_tax_credit, mileage,
+      model, year, variant, price, original_price, after_tax_credit, mileage,
       range_epa, top_speed, acceleration, exterior_color, interior_color,
       wheels, autopilot, seat_layout, additional_features, image_url,
       status, inventory_type, location
@@ -146,13 +152,13 @@ export const updateVehicle = async (req, res) => {
 
     const [result] = await pool.query(
       `UPDATE vehicles SET 
-       model = ?, variant = ?, price = ?, original_price = ?, after_tax_credit = ?, 
+       model = ?, year = ?, variant = ?, price = ?, original_price = ?, after_tax_credit = ?, 
        mileage = ?, range_epa = ?, top_speed = ?, acceleration = ?, 
        exterior_color = ?, interior_color = ?, wheels = ?, autopilot = ?, 
        seat_layout = ?, additional_features = ?, image_url = ?, status = ?, 
        inventory_type = ?, location = ?, updated_at = NOW()
        WHERE id = ?`,
-      [model, variant, price, original_price, after_tax_credit, mileage,
+      [model, year, variant, price, original_price, after_tax_credit, mileage,
        range_epa, top_speed, acceleration, exterior_color, interior_color,
        wheels, autopilot, seat_layout, additional_features, image_url,
        status, inventory_type, location, id]
@@ -191,6 +197,7 @@ export const getFilterOptions = async (req, res) => {
     const [colors] = await pool.query('SELECT DISTINCT exterior_color FROM vehicles WHERE exterior_color IS NOT NULL ORDER BY exterior_color');
     const [wheelsOptions] = await pool.query('SELECT DISTINCT wheels FROM vehicles WHERE wheels IS NOT NULL ORDER BY wheels');
     const [statuses] = await pool.query('SELECT DISTINCT status FROM vehicles ORDER BY status');
+    const [years] = await pool.query('SELECT DISTINCT year FROM vehicles WHERE year IS NOT NULL ORDER BY year DESC');
 
     res.json({
       success: true,
@@ -198,7 +205,8 @@ export const getFilterOptions = async (req, res) => {
         models: models.map(m => m.model),
         colors: colors.map(c => c.exterior_color),
         wheels: wheelsOptions.map(w => w.wheels),
-        statuses: statuses.map(s => s.status)
+        statuses: statuses.map(s => s.status),
+        years: years.map(y => y.year)
       }
     });
   } catch (error) {
