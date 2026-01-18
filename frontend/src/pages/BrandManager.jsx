@@ -66,7 +66,7 @@ const BrandManager = () => {
       // Set image preview for existing brand
       const imageUrl = brand.image_url.startsWith("http")
         ? brand.image_url
-        : `${API_BASE_URL}${brand.image_url}`;
+        : `${API_BASE_URL.replace("/api", "")}${brand.image_url}`;
       setImagePreview(imageUrl);
       setUploadMethod("url");
     } else {
@@ -237,7 +237,7 @@ const BrandManager = () => {
                     src={
                       brand.image_url.startsWith("http")
                         ? brand.image_url
-                        : `${API_BASE_URL}${brand.image_url}`
+                        : `${API_BASE_URL.replace("/api", "")}${brand.image_url}`
                     }
                     alt={brand.name}
                     className="w-full h-full object-cover"

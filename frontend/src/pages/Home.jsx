@@ -273,7 +273,7 @@ const Home = () => {
                       src={
                         brand.image_url.startsWith("http")
                           ? brand.image_url
-                          : `${API_BASE_URL}${brand.image_url}`
+                          : `${API_BASE_URL.replace("/api", "")}${brand.image_url}`
                       }
                       alt={brand.name}
                       className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
