@@ -17,6 +17,7 @@ import BulkUpload from "./pages/BulkUpload";
 import AdminVehicleList from "./pages/AdminVehicleList";
 import EditVehicle from "./pages/EditVehicle";
 import TestDriveRequests from "./pages/TestDriveRequests";
+import BrandManager from "./pages/BrandManager";
 import "./index.css";
 
 function App() {
@@ -33,6 +34,7 @@ function App() {
         <Route path="/admin/vehicles/bulk" element={<BulkUpload />} />
         <Route path="/admin/vehicles/edit/:id" element={<EditVehicle />} />
         <Route path="/admin/test-drives" element={<TestDriveRequests />} />
+        <Route path="/admin/brands" element={<BrandManager />} />
 
         {/* Public Routes (With Navbar/Footer) */}
         <Route

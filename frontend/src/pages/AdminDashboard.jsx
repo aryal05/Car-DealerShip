@@ -12,6 +12,7 @@ import {
   Users,
   DollarSign,
   Calendar,
+  Award,
 } from "lucide-react";
 import axios from "axios";
 import { API_BASE_URL } from "../config/api";
@@ -112,6 +113,13 @@ const AdminDashboard = () => {
       icon: Calendar,
       link: "/admin/test-drives",
       color: "bg-indigo-600",
+    },
+    {
+      title: "Premium Brands",
+      description: "Manage premium brand showcase",
+      icon: Award,
+      link: "/admin/brands",
+      color: "bg-yellow-600",
     },
     {
       title: "Vehicle List",

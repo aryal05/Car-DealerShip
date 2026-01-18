@@ -9,14 +9,14 @@ const Inventory = () => {
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
-    search: '',
-    model: searchParams.get('model') || '',
-    status: '',
-    minPrice: '',
-    maxPrice: '',
-    autopilot: '',
-    sort: 'created_at',
-    order: 'DESC'
+    search: "",
+    model: searchParams.get("model") || searchParams.get("brand") || "",
+    status: "",
+    minPrice: "",
+    maxPrice: "",
+    autopilot: "",
+    sort: "created_at",
+    order: "DESC",
   });
   const [showFilters, setShowFilters] = useState(false);
   const [filterOptions, setFilterOptions] = useState({

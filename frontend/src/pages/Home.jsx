@@ -1,19 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight, CheckCircle, Zap, Shield, Award } from 'lucide-react';
+import {
+  ArrowRight,
+  CheckCircle,
+  Zap,
+  Shield,
+  Award,
+  ArrowUpRight,
+} from "lucide-react";
+import axios from "axios";
+import { API_BASE_URL } from "../config/api";
 
 const Home = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  
+  const [brands, setBrands] = useState([]);
+
   const heroImages = [
-    'https://images.unsplash.com/photo-1619767886558-efdc259cde1a?w=1920&q=80',
-    'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1920&q=80',
-    'https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=1920&q=80',
-    'https://images.unsplash.com/photo-1617531653332-bd46c24f2068?w=1920&q=80',
-    'https://images.unsplash.com/photo-1614200187524-dc4b892acf16?w=1920&q=80',
-    'https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?w=1920&q=80',
-    'https://images.unsplash.com/photo-1502877338535-766e1452684a?w=1920&q=80'
+    "https://images.unsplash.com/photo-1619767886558-efdc259cde1a?w=1920&q=80",
+    "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1920&q=80",
+    "https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=1920&q=80",
+    "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?w=1920&q=80",
+    "https://images.unsplash.com/photo-1614200187524-dc4b892acf16?w=1920&q=80",
+    "https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?w=1920&q=80",
+    "https://images.unsplash.com/photo-1502877338535-766e1452684a?w=1920&q=80",
   ];
 
   useEffect(() => {
@@ -23,33 +33,37 @@ const Home = () => {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    fetchBrands();
+  }, []);
+
+  const fetchBrands = async () => {
+    try {
+      const response = await axios.get(
+        `${API_BASE_URL}/brands?active_only=true`,
+      );
+      setBrands(response.data.data);
+    } catch (error) {
+      console.error("Error fetching brands:", error);
+    }
+  };
+
   const features = [
     {
       icon: <Shield className="h-8 w-8" />,
-      title: 'Certified Quality',
-      description: 'All vehicles undergo rigorous inspection and certification'
+      title: "Certified Quality",
+      description: "All vehicles undergo rigorous inspection and certification",
     },
     {
       icon: <Zap className="h-8 w-8" />,
-      title: 'Fast Delivery',
-      description: 'Quick and efficient delivery to your doorstep'
+      title: "Fast Delivery",
+      description: "Quick and efficient delivery to your doorstep",
     },
     {
       icon: <Award className="h-8 w-8" />,
-      title: 'Premium Service',
-      description: '24/7 customer support and lifetime assistance'
-    }
-  ];
-
-  const brands = [
-    { name: 'Tesla', model: 'Model' },
-    { name: 'Mercedes', model: 'Mercedes' },
-    { name: 'BMW', model: 'BMW' },
-    { name: 'Audi', model: 'Audi' },
-    { name: 'Lexus', model: 'Lexus' },
-    { name: 'Porsche', model: 'Porsche' },
-    { name: 'Jaguar', model: 'Jaguar' },
-    { name: 'Volvo', model: 'Volvo' }
+      title: "Premium Service",
+      description: "24/7 customer support and lifetime assistance",
+    },
   ];
 
   return (
@@ -67,9 +81,11 @@ const Home = () => {
               transition={{ duration: 1.5, ease: "easeInOut" }}
               className="absolute inset-0"
             >
-              <div 
+              <div
                 className="w-full h-full bg-cover bg-center"
-                style={{ backgroundImage: `url(${heroImages[currentImageIndex]})` }}
+                style={{
+                  backgroundImage: `url(${heroImages[currentImageIndex]})`,
+                }}
               />
             </motion.div>
           </AnimatePresence>
@@ -84,16 +100,19 @@ const Home = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <motion.h1 
+            <motion.h1
               className="text-5xl md:text-7xl font-bold text-white mb-6"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.8 }}
             >
-              Looking for a vehicle?<br />
-              <span className="text-primary-400">You're in the perfect spot.</span>
+              Looking for a vehicle?
+              <br />
+              <span className="text-primary-400">
+                You're in the perfect spot.
+              </span>
             </motion.h1>
-            
+
             <motion.p
               className="text-xl md:text-2xl text-gray-300 mb-12 max-w-3xl mx-auto"
               initial={{ opacity: 0 }}
@@ -114,7 +133,10 @@ const Home = () => {
                 className="btn-primary flex items-center space-x-2 group"
               >
                 <span>Explore Inventory</span>
-                <ArrowRight className="group-hover:translate-x-1 transition-transform" size={20} />
+                <ArrowRight
+                  className="group-hover:translate-x-1 transition-transform"
+                  size={20}
+                />
               </Link>
               <Link
                 to="/contact"
@@ -133,16 +155,18 @@ const Home = () => {
             className="mt-20 grid grid-cols-3 gap-8 max-w-3xl mx-auto"
           >
             {[
-              { value: '500+', label: 'Vehicles' },
-              { value: '98%', label: 'Satisfaction' },
-              { value: '24/7', label: 'Support' }
+              { value: "500+", label: "Vehicles" },
+              { value: "98%", label: "Satisfaction" },
+              { value: "24/7", label: "Support" },
             ].map((stat, index) => (
               <motion.div
                 key={index}
                 whileHover={{ scale: 1.05 }}
                 className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20"
               >
-                <div className="text-3xl md:text-4xl font-bold text-white mb-2">{stat.value}</div>
+                <div className="text-3xl md:text-4xl font-bold text-white mb-2">
+                  {stat.value}
+                </div>
                 <div className="text-gray-300">{stat.label}</div>
               </motion.div>
             ))}
@@ -156,9 +180,9 @@ const Home = () => {
               key={index}
               onClick={() => setCurrentImageIndex(index)}
               className={`transition-all duration-300 rounded-full ${
-                index === currentImageIndex 
-                  ? 'bg-white w-10 h-2' 
-                  : 'bg-white/40 hover:bg-white/60 w-2 h-2'
+                index === currentImageIndex
+                  ? "bg-white w-10 h-2"
+                  : "bg-white/40 hover:bg-white/60 w-2 h-2"
               }`}
               aria-label={`Go to slide ${index + 1}`}
             />
@@ -188,7 +212,9 @@ const Home = () => {
             className="text-center mb-16"
           >
             <h2 className="section-title">Why Choose Aryals Dealer?</h2>
-            <p className="section-subtitle">Experience the difference with our premium services</p>
+            <p className="section-subtitle">
+              Experience the difference with our premium services
+            </p>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -223,30 +249,80 @@ const Home = () => {
             className="text-center mb-12"
           >
             <h2 className="section-title">Premium Brands</h2>
-            <p className="section-subtitle">Discover our finest selection of high-end vehicles</p>
+            <p className="section-subtitle">
+              Discover our finest selection of high-end vehicles
+            </p>
           </motion.div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {brands.map((brand, index) => (
               <Link
-                key={index}
-                to={`/inventory?model=${encodeURIComponent(brand.model)}`}
+                key={brand.id}
+                to={`/inventory?brand=${encodeURIComponent(brand.name)}`}
               >
                 <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  whileHover={{ scale: 1.05 }}
-                  className="bg-gray-50 rounded-xl p-8 flex items-center justify-center hover:shadow-lg transition-all duration-300 cursor-pointer hover:bg-primary-50 group"
+                  transition={{ delay: index * 0.1, duration: 0.5 }}
+                  whileHover={{ y: -10, scale: 1.02 }}
+                  className="relative h-80 rounded-2xl overflow-hidden shadow-xl group cursor-pointer"
                 >
-                  <span className="text-xl font-bold text-gray-700 group-hover:text-primary-600 transition-colors">
-                    {brand.name}
-                  </span>
+                  {/* Brand Image with Overlay */}
+                  <div className="absolute inset-0">
+                    <img
+                      src={brand.image_url}
+                      alt={brand.name}
+                      className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+                  </div>
+
+                  {/* Brand Name */}
+                  <div className="absolute top-6 left-6 z-10">
+                    <h3 className="text-3xl font-bold text-white drop-shadow-lg">
+                      {brand.name}
+                    </h3>
+                  </div>
+
+                  {/* Arrow Button */}
+                  <motion.div
+                    className="absolute bottom-6 right-6 z-10 bg-white rounded-full p-4 shadow-lg group-hover:bg-primary-600 transition-colors duration-300"
+                    whileHover={{ scale: 1.1, rotate: 45 }}
+                  >
+                    <ArrowUpRight
+                      className="text-gray-900 group-hover:text-white transition-colors"
+                      size={24}
+                    />
+                  </motion.div>
+
+                  {/* Hover Overlay */}
+                  <div className="absolute inset-0 bg-primary-600/0 group-hover:bg-primary-600/20 transition-all duration-300"></div>
                 </motion.div>
               </Link>
             ))}
           </div>
+
+          {/* View All Brands Link */}
+          {brands.length > 8 && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              className="text-center mt-12"
+            >
+              <Link
+                to="/inventory"
+                className="inline-flex items-center space-x-2 text-primary-600 hover:text-primary-700 font-semibold group"
+              >
+                <span>View All Brands</span>
+                <ArrowRight
+                  className="group-hover:translate-x-1 transition-transform"
+                  size={20}
+                />
+              </Link>
+            </motion.div>
+          )}
         </div>
       </section>
 
@@ -263,14 +339,18 @@ const Home = () => {
               Ready to Find Your Dream Car?
             </h2>
             <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-              Browse our extensive inventory of premium vehicles and find the perfect match for you
+              Browse our extensive inventory of premium vehicles and find the
+              perfect match for you
             </p>
             <Link
               to="/inventory"
               className="inline-flex items-center space-x-2 bg-white text-primary-700 px-8 py-4 rounded-lg font-bold hover:bg-gray-100 transition-all duration-300 shadow-xl hover:shadow-2xl group"
             >
               <span>View All Vehicles</span>
-              <ArrowRight className="group-hover:translate-x-2 transition-transform" size={20} />
+              <ArrowRight
+                className="group-hover:translate-x-2 transition-transform"
+                size={20}
+              />
             </Link>
           </motion.div>
         </div>
