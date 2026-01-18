@@ -33,8 +33,19 @@ const Inventory = () => {
   const fetchVehicles = async () => {
     try {
       setLoading(true);
+      const brandFromUrl = searchParams.get("brand");
       const response = await vehicleAPI.getAll(filters);
-      setVehicles(response.data.data);
+
+      // If filtering by brand from URL and no results, fetch all vehicles
+      if (brandFromUrl && response.data.data.length === 0) {
+        const allVehiclesResponse = await vehicleAPI.getAll({
+          ...filters,
+          model: "",
+        });
+        setVehicles(allVehiclesResponse.data.data);
+      } else {
+        setVehicles(response.data.data);
+      }
     } catch (error) {
       console.error('Error fetching vehicles:', error);
     } finally {

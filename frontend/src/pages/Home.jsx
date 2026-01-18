@@ -22,7 +22,6 @@ const Home = () => {
     "https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=1920&q=80",
     "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?w=1920&q=80",
     "https://images.unsplash.com/photo-1614200187524-dc4b892acf16?w=1920&q=80",
-    "https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?w=1920&q=80",
     "https://images.unsplash.com/photo-1502877338535-766e1452684a?w=1920&q=80",
   ];
 
@@ -271,7 +270,11 @@ const Home = () => {
                   {/* Brand Image with Overlay */}
                   <div className="absolute inset-0">
                     <img
-                      src={brand.image_url}
+                      src={
+                        brand.image_url.startsWith("http")
+                          ? brand.image_url
+                          : `${API_BASE_URL}${brand.image_url}`
+                      }
                       alt={brand.name}
                       className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
                     />

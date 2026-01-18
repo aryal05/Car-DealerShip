@@ -1,4 +1,5 @@
 import express from 'express';
+import upload from '../middleware/upload.js';
 import {
   getAllBrands,
   getBrandById,
@@ -13,9 +14,9 @@ const router = express.Router();
 router.get('/brands', getAllBrands);
 router.get('/brands/:id', getBrandById);
 
-// Admin routes
-router.post('/brands', createBrand);
-router.put('/brands/:id', updateBrand);
+// Admin routes (with file upload support)
+router.post('/brands', upload.single('image'), createBrand);
+router.put('/brands/:id', upload.single('image'), updateBrand);
 router.delete('/brands/:id', deleteBrand);
 
 export default router;

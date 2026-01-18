@@ -60,16 +60,22 @@ export const createBrand = async (req, res) => {
   try {
     const { name, image_url, display_order = 0, is_active = 1 } = req.body;
     
-    if (!name || !image_url) {
+    // Use uploaded file path if available, otherwise use provided URL
+    let finalImageUrl = image_url;
+    if (req.file) {
+      finalImageUrl = `/uploads/${req.file.filename}`;
+    }
+    
+    if (!name || !finalImageUrl) {
       return res.status(400).json({
         success: false,
-        message: 'Name and image URL are required'
+        message: 'Name and image are required'
       });
     }
     
     const [result] = await pool.query(
       'INSERT INTO brands (name, image_url, display_order, is_active) VALUES (?, ?, ?, ?)',
-      [name, image_url, display_order, is_active]
+      [name, finalImageUrl, display_order, is_active]
     );
     
     res.status(201).json({
@@ -78,7 +84,7 @@ export const createBrand = async (req, res) => {
       data: {
         id: result.insertId,
         name,
-        image_url,
+        image_url: finalImageUrl,
         display_order,
         is_active
       }
@@ -97,7 +103,12 @@ export const createBrand = async (req, res) => {
 export const updateBrand = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, image_url, display_order, is_active } = req.body;
+    let { name, image_url, display_order, is_active } = req.body;
+    
+    // Use uploaded file path if available
+    if (req.file) {
+      image_url = `/uploads/${req.file.filename}`;
+    }
     
     const updates = [];
     const values = [];

@@ -28,12 +28,15 @@ const BrandManager = () => {
     display_order: 0,
     is_active: 1
   });
+  const [uploadMethod, setUploadMethod] = useState("url"); // 'url' or 'file'
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('adminToken');
+    const token = localStorage.getItem("adminToken");
     if (!token) {
-      navigate('/admin/login');
+      navigate("/admin/login");
       return;
     }
     fetchBrands();
@@ -45,7 +48,7 @@ const BrandManager = () => {
       const response = await axios.get(`${API_BASE_URL}/brands`);
       setBrands(response.data.data);
     } catch (error) {
-      console.error('Error fetching brands:', error);
+      console.error("Error fetching brands:", error);
     } finally {
       setLoading(false);
     }
@@ -58,15 +61,15 @@ const BrandManager = () => {
         name: brand.name,
         image_url: brand.image_url,
         display_order: brand.display_order,
-        is_active: brand.is_active
+        is_active: brand.is_active,
       });
     } else {
       setEditingBrand(null);
       setFormData({
-        name: '',
-        image_url: '',
+        name: "",
+        image_url: "",
         display_order: brands.length,
-        is_active: 1
+        is_active: 1,
       });
     }
     setShowModal(true);
@@ -76,11 +79,14 @@ const BrandManager = () => {
     setShowModal(false);
     setEditingBrand(null);
     setFormData({
-      name: '',
-      image_url: '',
+      name: "",
+      image_url: "",
       display_order: 0,
-      is_active: 1
+      is_active: 1,
     });
+    setUploadMethod("url");
+    setSelectedFile(null);
+    setImagePreview("");
   };
 
   const handleSubmit = async (e) => {
@@ -88,41 +94,60 @@ const BrandManager = () => {
     setSubmitting(true);
 
     try {
+      const submitData = new FormData();
+      submitData.append("name", formData.name);
+      submitData.append("display_order", formData.display_order);
+      submitData.append("is_active", formData.is_active);
+
+      if (uploadMethod === "file" && selectedFile) {
+        submitData.append("image", selectedFile);
+      } else if (uploadMethod === "url" && formData.image_url) {
+        submitData.append("image_url", formData.image_url);
+      }
+
       if (editingBrand) {
-        await axios.put(`${API_BASE_URL}/brands/${editingBrand.id}`, formData);
+        await axios.put(
+          `${API_BASE_URL}/brands/${editingBrand.id}`,
+          submitData,
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+          },
+        );
       } else {
-        await axios.post(`${API_BASE_URL}/brands`, formData);
+        await axios.post(`${API_BASE_URL}/brands`, submitData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
       }
       fetchBrands();
       closeModal();
     } catch (error) {
-      console.error('Error saving brand:', error);
-      alert(error.response?.data?.message || 'Error saving brand');
+      console.error("Error saving brand:", error);
+      alert(error.response?.data?.message || "Error saving brand");
     } finally {
       setSubmitting(false);
     }
   };
 
   const deleteBrand = async (id) => {
-    if (!confirm('Are you sure you want to delete this brand?')) return;
+    if (!confirm("Are you sure you want to delete this brand?")) return;
 
     try {
       await axios.delete(`${API_BASE_URL}/brands/${id}`);
       fetchBrands();
     } catch (error) {
-      console.error('Error deleting brand:', error);
-      alert('Error deleting brand');
+      console.error("Error deleting brand:", error);
+      alert("Error deleting brand");
     }
   };
 
   const toggleActive = async (brand) => {
     try {
       await axios.put(`${API_BASE_URL}/brands/${brand.id}`, {
-        is_active: brand.is_active ? 0 : 1
+        is_active: brand.is_active ? 0 : 1,
       });
       fetchBrands();
     } catch (error) {
-      console.error('Error toggling brand status:', error);
+      console.error("Error toggling brand status:", error);
     }
   };
 
@@ -134,14 +159,18 @@ const BrandManager = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <button
-                onClick={() => navigate('/admin/dashboard')}
+                onClick={() => navigate("/admin/dashboard")}
                 className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
               >
                 <ArrowLeft size={24} />
               </button>
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">Brand Manager</h1>
-                <p className="text-gray-600 mt-1">Manage premium brand showcase</p>
+                <h1 className="text-3xl font-bold text-gray-900">
+                  Brand Manager
+                </h1>
+                <p className="text-gray-600 mt-1">
+                  Manage premium brand showcase
+                </p>
               </div>
             </div>
             <button
@@ -164,8 +193,12 @@ const BrandManager = () => {
         ) : brands.length === 0 ? (
           <div className="text-center py-12">
             <ImageIcon className="mx-auto text-gray-400 mb-4" size={64} />
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">No brands yet</h3>
-            <p className="text-gray-600 mb-6">Start by adding your first premium brand</p>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              No brands yet
+            </h3>
+            <p className="text-gray-600 mb-6">
+              Start by adding your first premium brand
+            </p>
             <button
               onClick={() => openModal()}
               className="btn-primary inline-flex items-center gap-2"
@@ -187,12 +220,16 @@ const BrandManager = () => {
                 {/* Brand Image */}
                 <div className="relative h-64">
                   <img
-                    src={brand.image_url}
+                    src={
+                      brand.image_url.startsWith("http")
+                        ? brand.image_url
+                        : `${API_BASE_URL}${brand.image_url}`
+                    }
                     alt={brand.name}
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
-                  
+
                   {/* Brand Name Overlay */}
                   <div className="absolute top-4 left-4">
                     <h3 className="text-2xl font-bold text-white drop-shadow-lg">
@@ -202,12 +239,14 @@ const BrandManager = () => {
 
                   {/* Status Badge */}
                   <div className="absolute top-4 right-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                      brand.is_active 
-                        ? 'bg-green-500 text-white' 
-                        : 'bg-gray-500 text-white'
-                    }`}>
-                      {brand.is_active ? 'Active' : 'Inactive'}
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                        brand.is_active
+                          ? "bg-green-500 text-white"
+                          : "bg-gray-500 text-white"
+                      }`}
+                    >
+                      {brand.is_active ? "Active" : "Inactive"}
                     </span>
                   </div>
                 </div>
@@ -224,8 +263,12 @@ const BrandManager = () => {
                       onClick={() => toggleActive(brand)}
                       className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-sm font-medium"
                     >
-                      {brand.is_active ? <EyeOff size={16} /> : <Eye size={16} />}
-                      {brand.is_active ? 'Hide' : 'Show'}
+                      {brand.is_active ? (
+                        <EyeOff size={16} />
+                      ) : (
+                        <Eye size={16} />
+                      )}
+                      {brand.is_active ? "Hide" : "Show"}
                     </button>
                     <button
                       onClick={() => openModal(brand)}
@@ -262,7 +305,7 @@ const BrandManager = () => {
               {/* Modal Header */}
               <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between z-10">
                 <h2 className="text-2xl font-bold text-gray-900">
-                  {editingBrand ? 'Edit Brand' : 'Add New Brand'}
+                  {editingBrand ? "Edit Brand" : "Add New Brand"}
                 </h2>
                 <button
                   onClick={closeModal}
@@ -282,41 +325,98 @@ const BrandManager = () => {
                   <input
                     type="text"
                     value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, name: e.target.value })
+                    }
                     required
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="e.g., Mercedes-Benz"
                   />
                 </div>
 
-                {/* Image URL */}
+                {/* Image Upload/URL */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Image URL *
+                    Brand Image *
                   </label>
-                  <input
-                    type="url"
-                    value={formData.image_url}
-                    onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                    required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="https://images.unsplash.com/..."
-                  />
-                  {formData.image_url && (
+
+                  {/* Upload Method Tabs */}
+                  <div className="flex gap-2 mb-3">
+                    <button
+                      type="button"
+                      onClick={() => setUploadMethod("url")}
+                      className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors ${
+                        uploadMethod === "url"
+                          ? "bg-blue-600 text-white"
+                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      }`}
+                    >
+                      Image URL
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setUploadMethod("file")}
+                      className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors ${
+                        uploadMethod === "file"
+                          ? "bg-blue-600 text-white"
+                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      }`}
+                    >
+                      Upload File
+                    </button>
+                  </div>
+
+                  {/* URL Input */}
+                  {uploadMethod === "url" && (
+                    <input
+                      type="url"
+                      value={formData.image_url}
+                      onChange={(e) => {
+                        setFormData({ ...formData, image_url: e.target.value });
+                        setImagePreview(e.target.value);
+                      }}
+                      required={uploadMethod === "url"}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="https://images.unsplash.com/..."
+                    />
+                  )}
+
+                  {/* File Upload */}
+                  {uploadMethod === "file" && (
+                    <div>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            setSelectedFile(file);
+                            setImagePreview(URL.createObjectURL(file));
+                          }
+                        }}
+                        required={uploadMethod === "file" && !editingBrand}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                      />
+                      <p className="text-sm text-gray-500 mt-2">
+                        Max size: 5MB. Accepted formats: JPG, PNG, GIF, WEBP
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Image Preview */}
+                  {imagePreview && (
                     <div className="mt-3 rounded-lg overflow-hidden">
                       <img
-                        src={formData.image_url}
+                        src={imagePreview}
                         alt="Preview"
                         className="w-full h-48 object-cover"
                         onError={(e) => {
-                          e.target.src = 'https://via.placeholder.com/800x400?text=Invalid+Image+URL';
+                          e.target.src =
+                            "https://via.placeholder.com/800x400?text=Invalid+Image";
                         }}
                       />
                     </div>
                   )}
-                  <p className="text-sm text-gray-500 mt-2">
-                    Use high-quality car images from Unsplash or similar sources
-                  </p>
                 </div>
 
                 {/* Display Order */}
@@ -327,7 +427,12 @@ const BrandManager = () => {
                   <input
                     type="number"
                     value={formData.display_order}
-                    onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value) })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        display_order: parseInt(e.target.value),
+                      })
+                    }
                     min="0"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
@@ -342,7 +447,12 @@ const BrandManager = () => {
                     <input
                       type="checkbox"
                       checked={formData.is_active === 1}
-                      onChange={(e) => setFormData({ ...formData, is_active: e.target.checked ? 1 : 0 })}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          is_active: e.target.checked ? 1 : 0,
+                        })
+                      }
                       className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                     />
                     <span className="text-sm font-medium text-gray-700">
@@ -373,7 +483,7 @@ const BrandManager = () => {
                     ) : (
                       <>
                         <Save size={20} />
-                        {editingBrand ? 'Update Brand' : 'Add Brand'}
+                        {editingBrand ? "Update Brand" : "Add Brand"}
                       </>
                     )}
                   </button>
