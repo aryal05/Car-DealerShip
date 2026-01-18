@@ -13,6 +13,7 @@ import {
   DollarSign,
   Calendar,
   Award,
+  MessageSquare,
 } from "lucide-react";
 import axios from "axios";
 import { API_BASE_URL } from "../config/api";
@@ -120,6 +121,13 @@ const AdminDashboard = () => {
       icon: Award,
       link: "/admin/brands",
       color: "bg-yellow-600",
+    },
+    {
+      title: "Contact Messages",
+      description: "View customer inquiries",
+      icon: MessageSquare,
+      link: "/admin/messages",
+      color: "bg-pink-600",
     },
     {
       title: "Vehicle List",

@@ -18,6 +18,7 @@ import AdminVehicleList from "./pages/AdminVehicleList";
 import EditVehicle from "./pages/EditVehicle";
 import TestDriveRequests from "./pages/TestDriveRequests";
 import BrandManager from "./pages/BrandManager";
+import ContactMessages from "./pages/ContactMessages";
 import "./index.css";
 
 function App() {
@@ -35,6 +36,7 @@ function App() {
         <Route path="/admin/vehicles/edit/:id" element={<EditVehicle />} />
         <Route path="/admin/test-drives" element={<TestDriveRequests />} />
         <Route path="/admin/brands" element={<BrandManager />} />
+        <Route path="/admin/messages" element={<ContactMessages />} />
 
         {/* Public Routes (With Navbar/Footer) */}
         <Route
