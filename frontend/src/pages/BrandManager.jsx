@@ -63,6 +63,12 @@ const BrandManager = () => {
         display_order: brand.display_order,
         is_active: brand.is_active,
       });
+      // Set image preview for existing brand
+      const imageUrl = brand.image_url.startsWith("http")
+        ? brand.image_url
+        : `${API_BASE_URL}${brand.image_url}`;
+      setImagePreview(imageUrl);
+      setUploadMethod("url");
     } else {
       setEditingBrand(null);
       setFormData({
@@ -71,6 +77,8 @@ const BrandManager = () => {
         display_order: brands.length,
         is_active: 1,
       });
+      setImagePreview("");
+      setUploadMethod("url");
     }
     setShowModal(true);
   };
@@ -99,10 +107,16 @@ const BrandManager = () => {
       submitData.append("display_order", formData.display_order);
       submitData.append("is_active", formData.is_active);
 
+      // Handle image upload
       if (uploadMethod === "file" && selectedFile) {
+        // New file uploaded
         submitData.append("image", selectedFile);
       } else if (uploadMethod === "url" && formData.image_url) {
+        // URL provided
         submitData.append("image_url", formData.image_url);
+      } else if (editingBrand && !selectedFile) {
+        // Editing existing brand without changing image - keep existing image_url
+        submitData.append("image_url", editingBrand.image_url);
       }
 
       if (editingBrand) {
