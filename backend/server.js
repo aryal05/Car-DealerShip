@@ -8,6 +8,7 @@ import adminRoutes from './routes/adminRoutes.js';
 import setupRoutes from './routes/setupRoutes.js';
 import testDriveRoutes from './routes/testDriveRoutes.js';
 import brandRoutes from './routes/brandRoutes.js';
+import contactRoutes from './routes/contactRoutes.js';
 import pool from './config/database.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -55,6 +56,7 @@ app.use('/api', adminRoutes);
 app.use('/api', setupRoutes);
 app.use('/api', testDriveRoutes);
 app.use('/api', brandRoutes);
+app.use('/api/contact', contactRoutes);
 
 // Health check
 app.get('/health', (req, res) => {
