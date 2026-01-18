@@ -33,11 +33,6 @@ const Inventory = () => {
     fetchFilterOptions();
   }, [filters]);
 
-  useEffect(() => {
-    console.log("filterOptions updated:", filterOptions);
-    console.log("years array:", filterOptions.years);
-  }, [filterOptions]);
-
   const fetchVehicles = async () => {
     try {
       setLoading(true);
@@ -64,7 +59,6 @@ const Inventory = () => {
   const fetchFilterOptions = async () => {
     try {
       const response = await vehicleAPI.getFilters();
-      console.log("Filter options response:", response.data.data);
       setFilterOptions(response.data.data);
     } catch (error) {
       console.error("Error fetching filter options:", error);
@@ -238,15 +232,11 @@ const Inventory = () => {
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                       >
                         <option value="">All Years</option>
-                        {filterOptions.years && filterOptions.years.length > 0 ? (
-                          filterOptions.years.map((year) => (
-                            <option key={year} value={year}>
-                              {year}
-                            </option>
-                          ))
-                        ) : (
-                          <option disabled>Loading years...</option>
-                        )}
+                        {filterOptions.years?.map((year) => (
+                          <option key={year} value={year}>
+                            {year}
+                          </option>
+                        ))}
                       </select>
                     </div>
 
